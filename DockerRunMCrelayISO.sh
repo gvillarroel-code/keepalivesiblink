@@ -1,0 +1,1 @@
+docker run -d --rm  -m 2G kasiblink
