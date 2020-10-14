@@ -5,22 +5,36 @@
 
 import java.io.*;
 import java.net.*;
+import java.text.Format;
+import java.text.SimpleDateFormat;
 import java.util.*;
 
 class kasiblink {
   public static int kainterval = 9000;
   public static int SLport = 4000;
   public static int SLECOresptimeout = 3000;
+  public static Calendar x;
+  public static String fecha;
+  public static String tramafinalmmdd;
+  public static String tramafinalhhmmss;
+  public static Format f;
 
   public static void main(String args[]) throws Exception {
     final BufferedInputStream din;
     final BufferedOutputStream dout;
     final Socket s;
 
+    x = Calendar.getInstance();
+    kasiblink.fecha =
+      Integer.toString(x.get(x.MONTH) + 101).substring(1, 3) +
+      Integer.toString(x.get(x.DATE) + 100).substring(1, 3);
+
+    System.out.println("Iniciando KeepAlive SibLink/SFB ");
+
     // CREA LA CONEXION A SIBLINK
     //    s = new Socket(InetAddress.getByName("172.30.85.72"), SLport);
     try {
-      s = new Socket(InetAddress.getByName("localhost"), SLport);
+      s = new Socket(InetAddress.getByName("172.30.85.72"), SLport);
       din = new BufferedInputStream(s.getInputStream(), 2048);
       dout = new BufferedOutputStream(s.getOutputStream(), 2048);
 
@@ -48,11 +62,30 @@ class kasiblink {
     byte b[] = new byte[8192];
     String str = "", str2 =
       "ISO0040000400800822000000000000004000000000000001234561234567890301";
-    String str4 =
+    String str5 =
       "ISO0140000130200B23A800128E0961E000000001600011AF31000000000000139mmddhhmmss015457hhmmssmmddmmddmmdd11           3799990386986532000=7412               000555      009900054       00000000000    00000000000000000000000000000000000000AR032FFFFFFFFFFFFFFFF023                       24764XJ8G7V95GWXD9EMPYR0Z          FAC0386272951964703860001003000046011133001004601113       0386230589027643860036205000040056918036004005691       4058960001082013   CASTRO, EMILCE EVANGELINA               NND0                                     012LINKLNK1+0000130386LNK11100P02554                       016                11614        28001004601113                28                            033000000000000000000000000000000000001 001 0430000000000000000000000000000000000000000000";
+
+    String str4 =
+      "ISO0140000100200B23A800128E0941E000000001600011A092000000000070000mmddhhmmss000001hhmmssmmddmmddmmdd11((acq.ins))37<track3.............................>123456789012tes1tes1tes1tes1term.term.term.locationlocationlocationlocationlocation032pin.pin.pin.pin.023*adddataadddataadddata*0120150********0130386TES1*****00588xxx016pinopinopinopino11recinstcode28184004002634++++++++++++++++28............................033termaddrtermaddrtermaddrtermaddr.001.001.043,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,";
+
     int i, j, l;
 
+    kasiblink.f = new SimpleDateFormat("HHmmss");
+    kasiblink.tramafinalhhmmss = f.format(new Date());
+    //System.out.println("Time = "+kasiblink.strhhmmss);
+
+    kasiblink.tramafinalmmdd = str4.replaceAll("mmdd", fecha);
+    kasiblink.tramafinalhhmmss =
+      kasiblink.tramafinalmmdd.replaceAll("hhmmss", kasiblink.tramafinalhhmmss);
+
+    //    System.out.println(str4);
+    //    System.out.println("###############################################");
+    //    System.out.println(kasiblink.tramafinalhhmmss);
+
+    str4 = kasiblink.tramafinalhhmmss;
+
     //      Escribo ECO .....
+
     try {
       i = str4.length();
       for (j = 0; j < i; j++) b[j] = (byte) str4.charAt(j);
@@ -60,7 +93,7 @@ class kasiblink {
       dout.write(i % 256);
       dout.write(b, 0, i);
       dout.flush();
-      System.out.println("Msg:" + str4);
+//      System.out.println("Msg:" + str4);
     } catch (Exception e) {
       System.out.println("No Pude enviar ECO SFB  Cerrando conexion ... ");
       try {

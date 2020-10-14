@@ -1,0 +1,1 @@
+docker run --name kasiblink --rm  -m 2G itservicegvillarroel/kasiblink:v1.0
