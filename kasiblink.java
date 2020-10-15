@@ -1,4 +1,4 @@
-// *** RELAY ISO PARA OMNICHANNEL/SIBLINK ***
+// *** GENERADOR DE TRX ECOS PARA OMNICHANNEL/SIBLINK ***
 // V1.stable
 //
 //********************************************
@@ -18,37 +18,47 @@ class kasiblink {
   public static String tramafinalmmdd;
   public static String tramafinalhhmmss;
   public static Format f;
+  public static boolean flagloopeco;
+  public static int ecostatus;
 
   public static void main(String args[]) throws Exception {
-    final BufferedInputStream din;
-    final BufferedOutputStream dout;
-    final Socket s;
+    BufferedInputStream din;
+    BufferedOutputStream dout;
+    Socket s;
 
     x = Calendar.getInstance();
     kasiblink.fecha =
       Integer.toString(x.get(x.MONTH) + 101).substring(1, 3) +
       Integer.toString(x.get(x.DATE) + 100).substring(1, 3);
 
-    System.out.println("Iniciando KeepAlive SibLink/SFB ");
-
     // CREA LA CONEXION A SIBLINK
     //    s = new Socket(InetAddress.getByName("172.30.85.72"), SLport);
-    try {
-      s = new Socket(InetAddress.getByName("172.30.85.72"), SLport);
-      din = new BufferedInputStream(s.getInputStream(), 2048);
-      dout = new BufferedOutputStream(s.getOutputStream(), 2048);
+    while (true) {
+      System.out.println("Iniciando KeepAlive SibLink/SFB ");
+      try {
+        s = new Socket(InetAddress.getByName("localhost"), SLport);
+        din = new BufferedInputStream(s.getInputStream(), 2048);
+        dout = new BufferedOutputStream(s.getOutputStream(), 2048);
 
-      // COMIENZA EL ENVIO DE ECOS
-      while (true) {
-        try {
-          Thread.sleep(4000);
-          EnvioEco(s, din, dout);
-        } catch (InterruptedException e) {
-          EnvioEco(s, din, dout);
+        // COMIENZA EL ENVIO DE ECOS
+        flagloopeco = true;
+        while (flagloopeco) {
+          try {
+            Thread.sleep(4000);
+            
+            if (EnvioEco(s, din, dout) != 0) {
+              flagloopeco = false;
+            }
+          } catch (InterruptedException e) {
+            if (EnvioEco(s, din, dout) != 0) {
+              flagloopeco = false;
+            }
+          }
         }
+      } catch (Exception ee) {
+        System.out.println("Error de conexion al puerto: "+ SLport +", posiblemente el relayISO este inactivo (reintentando....) ");
+        Thread.sleep(5000);
       }
-    } catch (Exception ee) {
-      System.out.println("Error de conexion: " + ee);
     }
   } // Fin de Main
 
@@ -65,9 +75,11 @@ class kasiblink {
     String str5 =
       "ISO0140000130200B23A800128E0961E000000001600011AF31000000000000139mmddhhmmss015457hhmmssmmddmmddmmdd11           3799990386986532000=7412               000555      009900054       00000000000    00000000000000000000000000000000000000AR032FFFFFFFFFFFFFFFF023                       24764XJ8G7V95GWXD9EMPYR0Z          FAC0386272951964703860001003000046011133001004601113       0386230589027643860036205000040056918036004005691       4058960001082013   CASTRO, EMILCE EVANGELINA               NND0                                     012LINKLNK1+0000130386LNK11100P02554                       016                11614        28001004601113                28                            033000000000000000000000000000000000001 001 0430000000000000000000000000000000000000000000";
 
-    String str4 =
+    String str3 =
       "ISO0140000100200B23A800128E0941E000000001600011A092000000000070000mmddhhmmss000001hhmmssmmddmmddmmdd11((acq.ins))37<track3.............................>123456789012tes1tes1tes1tes1term.term.term.locationlocationlocationlocationlocation032pin.pin.pin.pin.023*adddataadddataadddata*0120150********0130386TES1*****00588xxx016pinopinopinopino11recinstcode28184004002634++++++++++++++++28............................033termaddrtermaddrtermaddrtermaddr.001.001.043,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,";
 
+    String str4 =
+      "ISO0140000100220B23A800128E0941A000000001600011AA50000000000000000mmddhhmmss000002hhmmssmmddmmddmmdd11((acq.ins))37<track3.............................>123456789012tes1tes1tes1tes1term.term.term.locationlocationlocationlocationlocation032pin.pin.pin.pin.023N27030076821ataadddata*012**term.dat**013*card issuer*016pinopinopinopino11recinstcode28052004664928++++++++++++++++28............................033termaddrtermaddrtermaddrtermaddr.001.001.043,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,";
     int i, j, l;
 
     kasiblink.f = new SimpleDateFormat("HHmmss");
@@ -93,7 +105,7 @@ class kasiblink {
       dout.write(i % 256);
       dout.write(b, 0, i);
       dout.flush();
-//      System.out.println("Msg:" + str4);
+      //      System.out.println("Msg:" + str4);
     } catch (Exception e) {
       System.out.println("No Pude enviar ECO SFB  Cerrando conexion ... ");
       try {
@@ -121,9 +133,9 @@ class kasiblink {
     } catch (Exception e) {
       System.out.println("Respuesta ECO SFB no recibida.. Cerrando conexion  ");
       try {
-        //        din.close();
-        //        dout.close();
-        //        s.close();
+        din.close();
+        dout.close();
+        s.close();
         return 2;
       } catch (Exception ee) {
         System.out.println("No pude cerrar el socket ");
