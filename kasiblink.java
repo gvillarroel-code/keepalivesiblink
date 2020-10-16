@@ -19,6 +19,7 @@ class kasiblink {
   public static String tramafinalhhmmss;
   public static Format f;
   public static boolean flagloopeco;
+  public static boolean flagmain;
   public static int ecostatus;
 
   public static void main(String args[]) throws Exception {
@@ -31,12 +32,23 @@ class kasiblink {
       Integer.toString(x.get(x.MONTH) + 101).substring(1, 3) +
       Integer.toString(x.get(x.DATE) + 100).substring(1, 3);
 
+    if ( System.getenv("RELAYIP") == null) {
+      System.out.println(
+        "Por favor defina la variable de amiente RELAYIP (export RELAYIP='xx.xx.xx.xx')"
+      );
+      flagmain = false;
+    } else {
+      flagmain = true;
+    }
+
     // CREA LA CONEXION A SIBLINK
     //    s = new Socket(InetAddress.getByName("172.30.85.72"), SLport);
-    while (true) {
-      System.out.println("Iniciando KeepAlive SibLink/SFB ");
+    while (flagmain) {
+      System.out.println(
+        "Iniciando KeepAlive SibLink/SFB en:" + System.getenv("RELAYIP")
+      );
       try {
-        s = new Socket(InetAddress.getByName("localhost"), SLport);
+        s = new Socket(InetAddress.getByName(System.getenv("RELAYIP")), SLport);
         din = new BufferedInputStream(s.getInputStream(), 2048);
         dout = new BufferedOutputStream(s.getOutputStream(), 2048);
 
@@ -45,7 +57,7 @@ class kasiblink {
         while (flagloopeco) {
           try {
             Thread.sleep(4000);
-            
+
             if (EnvioEco(s, din, dout) != 0) {
               flagloopeco = false;
             }
@@ -56,7 +68,11 @@ class kasiblink {
           }
         }
       } catch (Exception ee) {
-        System.out.println("Error de conexion al puerto: "+ SLport +", posiblemente el relayISO este inactivo (reintentando....) ");
+        System.out.println(
+          "Error de conexion al puerto: " +
+          SLport +
+          ", posiblemente el relayISO este inactivo (reintentando....) "
+        );
         Thread.sleep(5000);
       }
     }
