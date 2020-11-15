@@ -106,32 +106,37 @@ class kasiblink {
 
     String str4 =
       "ISO0140000100220B23A800128E0941A000000001600011AA50000000000000000mmddhhmmss000002hhmmssmmddmmddmmdd11((acq.ins))37<track3.............................>123456789012tes1tes1tes1tes1term.term.term.locationlocationlocationlocationlocation032pin.pin.pin.pin.023N27030076821ataadddata*012**term.dat**013*card issuer*016pinopinopinopino11recinstcode28052004664928++++++++++++++++28............................033termaddrtermaddrtermaddrtermaddr.001.001.043,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,";
+    
+    // NUEVA TRAMA WSECO - EN TEST
+    String str6 =
+      "WSECOT00538912NOV202011048204801@0000";
+    
     int i, j, l;
 
     kasiblink.f = new SimpleDateFormat("HHmmss");
     kasiblink.tramafinalhhmmss = f.format(new Date());
     //System.out.println("Time = "+kasiblink.strhhmmss);
 
-    kasiblink.tramafinalmmdd = str4.replaceAll("mmdd", fecha);
+    kasiblink.tramafinalmmdd = str6.replaceAll("mmdd", fecha);
     kasiblink.tramafinalhhmmss =
-      kasiblink.tramafinalmmdd.replaceAll("hhmmss", kasiblink.tramafinalhhmmss);
+    kasiblink.tramafinalmmdd.replaceAll("hhmmss", kasiblink.tramafinalhhmmss);
 
-    //    System.out.println(str4);
+    //    System.out.println(str6);
     //    System.out.println("###############################################");
     //    System.out.println(kasiblink.tramafinalhhmmss);
 
-    str4 = kasiblink.tramafinalhhmmss;
+    str6 = kasiblink.tramafinalhhmmss;
 
     //      Escribo ECO .....
 
     try {
-      i = str4.length();
-      for (j = 0; j < i; j++) b[j] = (byte) str4.charAt(j);
+      i = str6.length();
+      for (j = 0; j < i; j++) b[j] = (byte) str6.charAt(j);
       dout.write(i / 256);
       dout.write(i % 256);
       dout.write(b, 0, i);
       dout.flush();
-      //      System.out.println("Msg:" + str4);
+      //      System.out.println("Msg:" + str6);
     } catch (Exception e) {
       System.out.println("No Pude enviar ECO SFB  Cerrando conexion ... ");
       try {
