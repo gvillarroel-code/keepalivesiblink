@@ -1,2 +1,2 @@
-docker push itservicegvillarroel/kasiblink:v1.0
+docker push itservicegvillarroel/kasiblink:v1.1
 

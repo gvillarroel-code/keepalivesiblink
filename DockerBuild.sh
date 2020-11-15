@@ -1,1 +1,1 @@
-docker build --tag itservicegvillarroel/kasiblink:v1.0 .
+docker build --tag itservicegvillarroel/kasiblink:v1.1 .

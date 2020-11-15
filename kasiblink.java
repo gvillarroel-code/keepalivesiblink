@@ -21,18 +21,25 @@ class kasiblink {
   public static boolean flagloopeco;
   public static boolean flagmain;
   public static int ecostatus;
+  public static BufferedInputStream din;
+  public static BufferedOutputStream dout;
+  public static Socket s;
+
 
   public static void main(String args[]) throws Exception {
-    BufferedInputStream din;
-    BufferedOutputStream dout;
-    Socket s;
+
+    System.out.println(
+        "Inicio demorado 60 seg"
+    );
+
+    Thread.sleep(60000);
 
     x = Calendar.getInstance();
     kasiblink.fecha =
       Integer.toString(x.get(x.MONTH) + 101).substring(1, 3) +
       Integer.toString(x.get(x.DATE) + 100).substring(1, 3);
 
-    if ( System.getenv("RELAYIP") == null) {
+    if (System.getenv("RELAYIP") == null) {
       System.out.println(
         "Por favor defina la variable de amiente RELAYIP (export RELAYIP='xx.xx.xx.xx')"
       );
@@ -71,9 +78,12 @@ class kasiblink {
         System.out.println(
           "Error de conexion al puerto: " +
           SLport +
-          ", posiblemente el relayISO este inactivo (reintentando....) "
+          ", posiblemente el relayISO este inactivo (cerrando conexio y reintentando....) "
         );
         Thread.sleep(5000);
+        din.close();
+        dout.close();
+        s.close();
       }
     }
   } // Fin de Main
