@@ -110,9 +110,9 @@ class kasiblink {
     String str4 =
       "ISO0140000100220B23A800128E0941A000000001600011AA50000000000000000mmddhhmmss000002hhmmssmmddmmddmmdd11((acq.ins))37<track3.............................>123456789012tes1tes1tes1tes1term.term.term.locationlocationlocationlocationlocation032pin.pin.pin.pin.023N99999999999ataadddata*012**term.dat**013*card issuer*016pinopinopinopino11recinstcode28052004664928++++++++++++++++28............................033termaddrtermaddrtermaddrtermaddr.001.001.043,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,";
 
-    // NUEVA TRAMA WSECO - EN TEST
+    // NUEVA TRAMA AUECO - EN TEST
     String str6 =
-      "WSECOT00538912NOV202011048204801@0000";
+      "AUECOT00001213ENE212011TC000000000000000000000000000000000000000000000000000000000000000000000000140121000000140121";
     
     int i, j, l;
 
